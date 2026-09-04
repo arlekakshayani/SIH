@@ -26,9 +26,9 @@ def ingest_flight_batch(
 
 @router.get("/", response_model=List[FlightResponseSchema])
 def list_flights(
-    route: Optional[str] = Query(None, description="Filter by route, e.g., DEL-BOM"),
-    advance_days: Optional[int] = Query(None, description="Filter by horizon (1, 7, 15, 30)"),
-    limit: int = Query(100, le=1000, description="Max records to return"),
+    route: Optional[str] = Query(None, pattern=r"^[A-Za-z]{3}-[A-Za-z]{3}$", description="Filter by route, e.g., DEL-BOM"),
+    advance_days: Optional[int] = Query(None, ge=0, le=365, description="Filter by horizon (1, 7, 15, 30)"),
+    limit: int = Query(100, ge=1, le=1000, description="Max records to return"),
     db: Session = Depends(get_db)
 ):
     """
