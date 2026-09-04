@@ -1,0 +1,23 @@
+# Python virtual environments
+venv/
+env/
+ENV/
+*.venv
+
+# Python bytecode / cache
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+*.env.local
+
+# IDEs
+.vscode/
+.idea/
+
+# Data cache
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
