@@ -46,7 +46,12 @@ class IndexCalculationResponse(BaseModel):
         default_factory=dict,
         description="Summary dictionary mapping route names to calculated index values"
     )
+    route_details: Optional[Dict[str, Any]] = Field(
+        default_factory=dict,
+        description="Detailed sub-window calculations including T+1 and T+7 advance window indices and weights"
+    )
     records: List[IndexResponseSchema] = Field(
         default_factory=list,
         description="Detailed list of generated index records"
     )
+

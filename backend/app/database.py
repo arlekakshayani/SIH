@@ -5,20 +5,23 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Try connecting to configured database (PostgreSQL); if authentication/connection fails, fallback to SQLite
+# Try connecting to configured database; fallback to SQLite if needed
 engine = None
+db_url = settings.DATABASE_URL or "sqlite:///./airfare_db.db"
+connect_args = {"check_same_thread": False} if "sqlite" in db_url else {}
+
 try:
-    temp_engine = create_engine(settings.DATABASE_URL)
-    with temp_engine.connect() as conn:
+    engine = create_engine(db_url, connect_args=connect_args)
+    with engine.connect() as conn:
         pass
-    engine = temp_engine
-    logger.info("Connected to PostgreSQL database successfully.")
+    logger.info(f"Connected to database successfully ({db_url}).")
 except Exception as e:
-    logger.warning(f"PostgreSQL connection failed ({e}). Falling back to SQLite ('airfare_db.db') for local development.")
+    logger.warning(f"Database connection failed ({e}). Falling back to SQLite ('airfare_db.db').")
     engine = create_engine(
         "sqlite:///./airfare_db.db",
         connect_args={"check_same_thread": False}
     )
+
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

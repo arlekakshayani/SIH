@@ -24,3 +24,28 @@ class FlightPrice(Base):
     total_fare = Column(Float, nullable=False)                     # Total paid price
     source = Column(String(50), nullable=False)                    # Collector source
     scraped_at = Column(DateTime, default=datetime.utcnow)        # Timestamp saved
+
+
+class PrototypeBaselinePrice(Base):
+    """
+    Dedicated separate table for storing permanently fixed prototype reference
+    data (e.g. Sep 5, 2026 baseline data with fixed 10:00 departure time,
+    T+1 and T+7 advance days, IndiGo, Akasa Air, Air India).
+    """
+    __tablename__ = "prototype_baseline_prices"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    route = Column(String(10), nullable=False, index=True)
+    airline = Column(String(50), nullable=False, index=True)
+    flight_number = Column(String(20), nullable=False)
+    departure_date = Column(Date, nullable=False, index=True)
+    departure_time = Column(String(10), nullable=False, default="10:00")
+    arrival_time = Column(String(10), nullable=False, default="12:15")
+    booking_date = Column(Date, nullable=False)
+    advance_days = Column(Integer, nullable=False, index=True)
+    cabin_class = Column(String(20), default="Economy")
+    base_fare = Column(Float, nullable=False)
+    taxes = Column(Float, nullable=False)
+    total_fare = Column(Float, nullable=False)
+    source = Column(String(50), default="sep5_prototype_fixed")
+    scraped_at = Column(DateTime, default=datetime.utcnow)

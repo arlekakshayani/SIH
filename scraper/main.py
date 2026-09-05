@@ -18,7 +18,7 @@ CORRIDORS = [
     ("HYD", "MAA")  # Hyderabad to Chennai (Regional Metro)
 ]
 
-ADVANCE_BUCKETS = [1, 7, 15, 30]
+ADVANCE_BUCKETS = [1, 7]
 
 def run_collection_cycle():
     logger.info("Starting Playwright dynamic web scraping collection cycle...")

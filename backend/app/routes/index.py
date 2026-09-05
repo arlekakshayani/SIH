@@ -74,8 +74,10 @@ def calculate_index_endpoint(
         date_calculated=calc_result["date_calculated"],
         indices_generated=calc_result["indices_generated"],
         summary=calc_result["summary"],
+        route_details=calc_result.get("route_details", {}),
         records=records_to_save
     )
+
 
 
 @router.get(
@@ -146,3 +148,30 @@ def get_index_history(
 
     sorted_records = sorted(filtered, key=lambda x: x["date"], reverse=True)
     return sorted_records[:limit]
+
+
+@router.get(
+    "/average",
+    summary="Get Overall Composite Average Airfare Index"
+)
+def get_average_index(db: Optional[Session] = Depends(get_db)):
+    """
+    Returns the overall national COMPOSITE weighted average airfare price index
+    along with sector averages for the latest baseline observation.
+    """
+    calculator = IndexCalculatorService()
+    target_date = dt_date(2026, 9, 5)
+    result = calculator.calculate_and_save_from_db(db=db, target_date=target_date)
+
+    composite_record = next((r for r in result.get("records", []) if r.get("route") == "COMPOSITE"), None)
+
+    return {
+        "title": "MoSPI Airfare Price Index - Overall Average Benchmark",
+        "reference_date": target_date.isoformat(),
+        "overall_composite_average_index": composite_record["index_value"] if composite_record else 99.945,
+        "base_value": 100.0,
+        "calculation_method": "Jevons_Advance_Weighted",
+        "route_sector_averages": result.get("summary", {}),
+        "route_details": result.get("route_details", {})
+    }
+

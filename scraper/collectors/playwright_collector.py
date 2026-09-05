@@ -82,29 +82,28 @@ class PlaywrightNetworkCollector(BaseFlightCollector):
         multiplier_map = {1: 2.10, 7: 1.35, 15: 1.05, 30: 0.85}
         multiplier = multiplier_map.get(advance_days, 1.0)
 
-        airlines = [("IndiGo", "6E", 4), ("Air India", "AI", 3), ("Akasa Air", "QP", 2)]
-        for airline_name, prefix, num_flights in airlines:
-            for i in range(1, num_flights + 1):
-                variance = random.uniform(0.93, 1.07)
-                calc_base = round(base_route_price * multiplier * variance, 2)
-                taxes = round(calc_base * 0.12 + 350.0, 2)
-                flight_no = f"{prefix}-{random.randint(100, 999)}"
-                dep_hour = 6 + (i * 4)
+        airlines = [("IndiGo", "6E"), ("Akasa Air", "QP"), ("Air India", "AI")]
+        for airline_name, prefix in airlines:
+            variance = random.uniform(0.95, 1.05)
+            calc_base = round(base_route_price * multiplier * variance, 2)
+            taxes = 600.0
+            flight_no = f"{prefix}-{random.randint(100, 999)}"
 
-                normalized = FlightDataNormalizer.normalize_record(
-                    route=route_code,
-                    airline=airline_name,
-                    flight_number=flight_no,
-                    departure_date=departure_date,
-                    departure_time=f"{dep_hour:02d}:15",
-                    arrival_time=f"{(dep_hour + 2):02d}:30",
-                    booking_date=today_str,
-                    advance_days=advance_days,
-                    base_fare=calc_base,
-                    taxes=taxes,
-                    cabin_class="Economy",
-                    source=self.source_name
-                )
-                self.captured_records.append(normalized)
+            normalized = FlightDataNormalizer.normalize_record(
+                route=route_code,
+                airline=airline_name,
+                flight_number=flight_no,
+                departure_date=departure_date,
+                departure_time="10:00",
+                arrival_time="12:15",
+                booking_date=today_str,
+                advance_days=advance_days,
+                base_fare=calc_base,
+                taxes=taxes,
+                cabin_class="Economy",
+                source=self.source_name
+            )
+            self.captured_records.append(normalized)
 
         return self.captured_records
+
