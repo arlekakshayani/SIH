@@ -2,7 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models.flight import FlightPrice
+from app.models.flight import FlightPrice, PrototypeBaselinePrice
 from app.schemas.flight import FlightCreateSchema, FlightResponseSchema
 from app.services.cleaning import FlightCleaningService
 
@@ -24,6 +24,14 @@ def ingest_flight_batch(
         "records_saved": saved_count
     }
 
+@router.get("/prototype-baseline", response_model=List[FlightResponseSchema])
+def get_prototype_baseline_flights(db: Session = Depends(get_db)):
+    """
+    Returns all 18 fixed records stored in the dedicated 'prototype_baseline_prices' table.
+    """
+    return db.query(PrototypeBaselinePrice).all()
+
+
 @router.get("/", response_model=List[FlightResponseSchema])
 def list_flights(
     route: Optional[str] = Query(None, description="Filter by route, e.g., DEL-BOM"),
@@ -41,3 +49,5 @@ def list_flights(
         query = query.filter(FlightPrice.advance_days == advance_days)
 
     return query.order_by(FlightPrice.scraped_at.desc()).limit(limit).all()
+
+
